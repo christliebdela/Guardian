@@ -1,0 +1,28 @@
+# Recordings directory - contains captured images, videos and audio
+recordings/
+
+# Python bytecode files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Logs
+*.log
+guardian.log
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS specific files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Virtual environment
+venv/
+env/

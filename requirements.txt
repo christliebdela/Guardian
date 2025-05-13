@@ -1,0 +1,7 @@
+opencv-python>=4.5.5
+numpy>=1.22.0
+pyTelegramBotAPI>=4.4.0
+pygame>=2.1.0
+requests>=2.27.1
+colorama>=0.4.4
+PyAudio>=0.2.11

@@ -1,0 +1,79 @@
+import os
+import re
+import sys
+import glob
+import shutil
+
+def remove_comments(content):
+    # Remove multi-line comments (triple-quoted strings that aren't docstrings)
+    content = re.sub(r'"""[\s\S]*?"""', '', content)
+    content = re.sub(r"'''[\s\S]*?'''", '', content)
+    
+    # Remove single-line comments
+    result = []
+    for line in content.split('\n'):
+        # Keep the line if it doesn't have a comment or is not just a comment
+        if '#' in line:
+            # Keep everything before the comment
+            line = line.split('#', 1)[0]
+        result.append(line)
+    
+    # Join lines and remove any trailing whitespace from each line
+    cleaned = '\n'.join(line.rstrip() for line in result)
+    
+    # Clean up resulting empty lines (keep structure but minimize multiple empty lines)
+    cleaned = re.sub(r'\n\s*\n\s*\n', '\n\n', cleaned)
+    
+    return cleaned
+
+def process_file(file_path, backup=True):
+    print(f"Processing: {file_path}")
+    
+    # Create backup
+    if backup:
+        backup_path = file_path + '.bak'
+        shutil.copy2(file_path, backup_path)
+        print(f"  Backup created: {backup_path}")
+    
+    try:
+        # Read file
+        with open(file_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        
+        # Remove comments
+        cleaned = remove_comments(content)
+        
+        # Write back to original file
+        with open(file_path, 'w', encoding='utf-8') as f:
+            f.write(cleaned)
+            
+        print(f"  Removed comments successfully")
+    except Exception as e:
+        print(f"  Error processing {file_path}: {e}")
+        if backup:
+            # Restore from backup if something went wrong
+            shutil.copy2(backup_path, file_path)
+            print(f"  Restored from backup due to error")
+
+def main():
+    if len(sys.argv) < 2:
+        print("Usage: python remove_comments.py <file_pattern>")
+        print("Example: python remove_comments.py *.py")
+        print("         python remove_comments.py guardian.py")
+        return
+    
+    file_pattern = sys.argv[1]
+    files = glob.glob(file_pattern)
+    
+    if not files:
+        print(f"No files found matching pattern: {file_pattern}")
+        return
+    
+    print(f"Found {len(files)} files matching {file_pattern}")
+    for file_path in files:
+        process_file(file_path)
+    
+    print("Done!")
+
+if __name__ == "__main__":
+    main()
